@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 
 
-points = [(0.8, 0.3), (0.8, 0), (1.5, -0.7), (1.5, 0), (1.2, 0.3)]  # (index_start, index_end)
-edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]  # (index_start, index_end)
+points = [(-2, 2), (-2, -2), (2, -2), (2, 2)]  # # (index_start, index_end)
+edges = [(0, 1), (1, 2), (2, 3), (3, 0)]  # (index_start, index_end)
 triags_point = []  # (point_1, point_2, point_3)
 
-r = 0.1
+r = 0.5
 EPS = 1e-5
 
 # разбиение отрезков границы на подотрезки длиной приближительно равной r
@@ -74,28 +74,27 @@ while len(front_edges) > 0:
             if (p_x - c_x) ** 2 + (p_y - c_y) ** 2 <= r ** 2:
                 flag = False
                 if front_edges[j][0] == front_edges[0][0] or front_edges[j][0] == front_edges[0][1]:
-                    correct_points += [(j, (p_x - c_x) ** 2 + (p_y - c_y) ** 2, front_edges[j][1])]
+                    here_point = points[front_edges[j][1]]
+                    correct_points += [(j, (here_point[0] - c_x) ** 2 + (here_point[1] - c_y) ** 2, front_edges[j][1])]
                 elif front_edges[j][1] == front_edges[0][0] or front_edges[j][1] == front_edges[0][1]:
-                    correct_points += [(j, (p_x - c_x) ** 2 + (p_y - c_y) ** 2, front_edges[j][0])]
+                    here_point = points[front_edges[j][0]]
+                    correct_points += [(j, (here_point[0] - c_x) ** 2 + (here_point[1] - c_y) ** 2, front_edges[j][0])]
                 elif ((a1_x - a_x) ** 2 + (a1_y - a_y) ** 2) ** 0.5 + \
                     ((a1_x - b_x) ** 2 + (a1_x - b_y) ** 2) ** 0.5 <= \
                     ((b1_x - a_x) ** 2 + (b1_y - a_y) ** 2) ** 0.5 + \
                     ((b1_x - b_x) ** 2 + (b1_x - b_y) ** 2) ** 0.5:
-                    correct_points += [(j, (p_x - c_x) ** 2 + (p_y - c_y) ** 2, front_edges[j][0])]
+                    here_point = points[front_edges[j][0]]
+                    correct_points += [(j, (here_point[0] - c_x) ** 2 + (here_point[1] - c_y) ** 2, front_edges[j][0])]
                 else:
-                    correct_points += [(j, (p_x - c_x) ** 2 + (p_y - c_y) ** 2, front_edges[j][1])]
+                    here_point = points[front_edges[j][1]]
+                    correct_points += [(j, (here_point[0] - c_x) ** 2 + (here_point[1] - c_y) ** 2, front_edges[j][1])]
         else:
-            flag2 = True
             if (a1_x - c_x) ** 2 + (a1_y - c_y) ** 2 <= r ** 2:
                 flag = False
-                flag2 = False
                 correct_points += [(j, (a1_x - c_x) ** 2 + (a1_y - c_y) ** 2, front_edges[j][0])]
             if (b1_x - c_x) ** 2 + (b1_y - c_y) ** 2 <= r ** 2:
                 flag = False
-                flag2 = False
                 correct_points += [(j, (b1_x - c_x) ** 2 + (b1_y - c_y) ** 2, front_edges[j][1])]
-            if flag2:
-                continue
     if flag == True:
         points += [(c_x, c_y)]
         edges += [(front_edges[0][0], len(points) - 1), (len(points) - 1, front_edges[0][1])]
@@ -131,12 +130,12 @@ for i in range(len(edges)):
     x_coords = [points[edge[0]][0], points[edge[1]][0]]
     y_coords = [points[edge[0]][1], points[edge[1]][1]]
 
-    plt.plot(x_coords, y_coords, linewidth=2, color='blue')
+    plt.plot(x_coords, y_coords, linewidth=2, color='black')
 
     # mid_x = (points[edge[0]][0] + points[edge[1]][0]) / 2
     # mid_y = (points[edge[0]][1] + points[edge[1]][1]) / 2
-
-    # Добавляем номер ребра
+    #
+    # # Добавляем номер ребра
     # plt.text(mid_x, mid_y, str(i),
     #          fontsize=10, fontweight='bold',
     #          color='red',
@@ -146,8 +145,8 @@ for i in range(len(edges)):
 #     plt.plot(point[0], point[1], 'ro', markersize=8)
 
 for i, (x, y) in enumerate(points):
-    plt.plot(x, y, 'ro', markersize=8)
-    plt.text(x + 0.01, y + 0.01, str(i), fontsize=12, fontweight='bold')
+    plt.plot(x, y, 'ro', markersize=8, color='black')
+    plt.text(x + 0.1, y + 0.1, str(i), fontsize=12, fontweight='bold')
 
 plt.axis('equal')
 plt.grid(True)
