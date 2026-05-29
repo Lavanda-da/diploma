@@ -1,6 +1,56 @@
-points = [(2, 5), (6, 3), (9, 4.5), (8, 9), (3, 9), (2.8944271909999157, 4.552786404500042), (3.7888543819998315, 4.105572809000084), (4.683281572999748, 3.658359213500126), (6.894427190999916, 3.447213595499958), (7.7888543819998315, 3.8944271909999157), (8.783069542181345, 5.476187060183953), (8.566139084362687, 6.452374120367906), (8.349208626544032, 7.428561180551858), (7.0, 9.0), (6.0, 9.0), (5.0, 9.0), (4.0, 9.0), (2.757464374963667, 8.029857499854668), (2.514928749927334, 7.059714999709336), (2.272393124891001, 6.089572499564005), (3.788854381999831, 5.223606797749979), (5.788854381999832, 4.223606797749979), (7.698417253088064, 5.747350132457273), (7.198417253088064, 7.9973501324572736), (5.5, 8.0), (3.6063390625908323, 7.302250624745668), (6.951259128357985, 5.045741220468715), (5.236067977499789, 5.618033988749895), (6.472230192904112, 6.655419674638616), (4.898911895800069, 6.712795830055065)]
-edges = [(0, 5), (5, 6), (6, 7), (7, 1), (1, 8), (8, 9), (9, 2), (2, 10), (10, 11), (11, 12), (12, 3), (3, 13), (13, 14), (14, 15), (15, 16), (16, 4), (4, 17), (17, 18), (18, 19), (19, 0), (0, 19), (19, 5), (5, 20), (20, 6), (6, 20), (20, 7), (7, 21), (21, 1), (1, 21), (21, 8), (8, 21), (21, 9), (9, 10), (10, 2), (10, 22), (22, 11), (11, 22), (22, 12), (12, 23), (23, 3), (3, 23), (23, 13), (13, 23), (23, 14), (14, 24), (24, 15), (15, 24), (24, 16), (16, 17), (17, 4), (17, 25), (25, 18), (18, 25), (25, 19), (19, 20), (20, 5), (20, 21), (21, 7), (21, 26), (26, 9), (9, 22), (22, 10), (22, 23), (23, 12), (23, 24), (24, 14), (24, 25), (25, 16), (16, 25), (25, 17), (25, 20), (20, 19), (20, 27), (27, 21), (21, 27), (27, 26), (26, 22), (22, 9), (22, 28), (28, 23), (23, 28), (28, 24), (24, 29), (29, 25), (25, 27), (27, 20), (27, 28), (28, 26), (26, 28), (28, 22), (28, 29), (29, 24), (29, 27), (27, 25), (27, 29), (29, 28)]
-triags = [(0, 19, 5), (5, 20, 6), (6, 20, 7), (7, 21, 1), (1, 21, 8), (8, 21, 9), (9, 10, 2), (10, 22, 11), (11, 22, 12), (12, 23, 3), (3, 23, 13), (13, 23, 14), (14, 24, 15), (15, 24, 16), (16, 17, 4), (17, 25, 18), (18, 25, 19), (19, 20, 5), (20, 21, 7), (21, 26, 9), (9, 22, 10), (22, 23, 12), (23, 24, 14), (24, 25, 16), (16, 25, 17), (25, 20, 19), (20, 27, 21), (21, 27, 26), (26, 22, 9), (22, 28, 23), (23, 28, 24), (24, 29, 25), (25, 27, 20), (27, 28, 26), (26, 28, 22), (28, 29, 24), (29, 27, 25), (27, 29, 28)]
+import time
+import json
+
+
+def det(matrix):
+    if len(matrix) == 1:
+        return matrix[0][0]
+    n = len(matrix)
+    res = 0
+    for i in range(n):
+        res_now = (-1) ** i * matrix[0][i]
+        new_matrix = []
+        for ii in range(1, n):
+            string = []
+            for jj in range(i):
+                string += [matrix[ii][jj]]
+            for jj in range(i + 1, n):
+                string += [matrix[ii][jj]]
+            new_matrix += [string]
+        res_now *= det(new_matrix)
+        res += res_now
+    return res
+
+
+points = None
+with open('start_points_100.json', 'r') as f:
+    points = json.load(f)
+for i in range(len(points[-1])):
+    points[-1][i] = tuple(points[-1][i])
+
+edges = None
+with open('start_edges_100.json', 'r') as f:
+    edges = json.load(f)
+for i in range(len(edges)):
+    edges[i] = tuple(edges[i])
+
+triags = None
+with open('start_triags_100.json', 'r') as f:
+    triags = json.load(f)
+for i in range(len(triags)):
+    triags[i] = tuple(triags[i])
+
+
+start_time = time.time()
+
+for i in range(len(edges)):
+    edges[i] = tuple(sorted(list(edges[i])))
+
+for i in range(len(triags)):
+    triags[i] = tuple(sorted(list(triags[i])))
+
+random_point = (-0.453, -0.058)
+# random_point = (-1.02, 0.9915)
 
 triags_with_edge = []  # (edge_1, edge_2, edge_3)
 
@@ -36,54 +86,113 @@ for i in range(len(triags_with_edge)):
     triags_on_edges[triags_with_edge[i][0]] += [i]
     triags_on_edges[triags_with_edge[i][1]] += [i]
     triags_on_edges[triags_with_edge[i][2]] += [i]
-print(triags_on_edges)
+# print(triags_on_edges)
 
 
-x, y = map(int, input().split())
+# x, y = map(int, input().split())
+# x, y = random_point
+
+
+random_points = None
+with open('random_points.json', 'r') as f:
+    random_points = json.load(f)
+for i in range(len(random_points)):
+    random_points[i] = tuple(random_points[i])
+
+
 alfa, beta, gama = None, None, None
 num_of_triag = None
 
-i = 0
-while True:
-    x1, y1 = points[triags[i][0]][0], points[triags[i][0]][1]
-    x2, y2 = points[triags[i][1]][0], points[triags[i][1]][1]
-    x3, y3 = points[triags[i][2]][0], points[triags[i][2]][1]
-    delta = x2 * y3 + x3 * y1 + x1 * y2 - \
-            (x2 * y1 + x3 * y2 + x1 * y3)
+nums_of_triag = []
+bar_koords = []
+ind_point = -1
+for point in random_points:
+    ind_point += 1
+    print(ind_point)
+    x, y = point
+    i = 0
+    while True:
+        # print(ind_point, i)
+        x1, y1 = points[0][triags[i][0]][0], points[0][triags[i][0]][1]
+        x2, y2 = points[0][triags[i][1]][0], points[0][triags[i][1]][1]
+        x3, y3 = points[0][triags[i][2]][0], points[0][triags[i][2]][1]
+        delta = x2 * y3 + x3 * y1 + x1 * y2 - \
+                (x2 * y1 + x3 * y2 + x1 * y3)
 
-    alfa = x2 * y3 + x3 * y + x * y2 - \
-           (x2 * y + x3 * y2 + x * y3)
-    beta = x * y3 + x3 * y1 + x1 * y - \
-           (x * y1 + x3 * y + x1 * y3)
-    gama = x2 * y + x * y1 + x1 * y2 - \
-           (x2 * y1 + x * y2 + x1 * y)
-    alfa /= delta
-    beta /= delta
-    gama /= delta
+        alfa = x2 * y3 + x3 * y + x * y2 - \
+               (x2 * y + x3 * y2 + x * y3)
+        beta = x * y3 + x3 * y1 + x1 * y - \
+               (x * y1 + x3 * y + x1 * y3)
+        gama = x2 * y + x * y1 + x1 * y2 - \
+               (x2 * y1 + x * y2 + x1 * y)
+        alfa /= delta
+        beta /= delta
+        gama /= delta
 
-    if alfa >= 0 and beta >= 0 and gama >= 0:
-        num_of_triag = i
-        break
+        if alfa >= 0 and beta >= 0 and gama >= 0:
+            nums_of_triag += [i]
 
-    point1, point2 = None, None
-    if alfa < 0:
-        point1, point2 = triags[i][1], triags[i][2]
-    elif beta < 0:
-        point1, point2 = triags[i][0], triags[i][2]
-    elif gama < 0:
-        point1, point2 = triags[i][0], triags[i][1]
+            triag = triags[i]
+            mid1 = ((points[0][triag[0]][0] + points[0][triag[1]][0]) / 2,
+                    (points[0][triag[0]][1] + points[0][triag[1]][1]) / 2)  # 0, 1 points
+            mid2 = ((points[0][triag[1]][0] + points[0][triag[2]][0]) / 2,
+                    (points[0][triag[1]][1] + points[0][triag[2]][1]) / 2)  # 0, 2 points
+            mid3 = ((points[0][triag[0]][0] + points[0][triag[2]][0]) / 2,
+                    (points[0][triag[0]][1] + points[0][triag[2]][1]) / 2)  # 0, 2 points
 
-    ind_edge = None
-    if (point1, point2) in edges:
-        ind_edge = edges.index((point1, point2))
-    else:
-        ind_edge = edges.index((point2, point1))
+            matrix = [[1, 1, 1, 1, 1, 1],
+                      [x1, x2, x3, mid1[0], mid2[0], mid3[0]],
+                      [y1, y2, y3, mid1[1], mid2[1], mid3[1]],
+                      [x1 * y1, x2 * y2, x3 * y3, mid1[0] * mid1[1], mid2[0] * mid2[1], mid3[0] * mid3[1]],
+                      [x1 ** 2, x2 ** 2, x3 ** 2, mid1[0] ** 2, mid2[0] ** 2, mid3[0] ** 2],
+                      [y1 ** 2, y2 ** 2, y3 ** 2, mid1[1] ** 2, mid2[1] ** 2, mid3[1] ** 2]]
 
-    indexes = triags_on_edges[ind_edge]
-    for j in indexes:
-        if j != i:
-            i = j
+            delta = det(matrix)
+
+            d = [1, x, y, x * y, x ** 2, y ** 2]
+            koef = []
+            for jj in range(len(matrix)):
+                new_matrix = []
+                for i in range(len(matrix)):
+                    new_string = matrix[i][:]
+                    new_string[jj] = d[i]
+                    new_matrix += [new_string]
+                koef += [det(new_matrix) / delta]
+            bar_koords += [(tuple(koef), (alfa, beta, gama))]
             break
 
-print(num_of_triag)
-print(alfa, beta, gama)
+        point1, point2 = None, None
+        if alfa < 0:
+            point1, point2 = triags[i][1], triags[i][2]
+        elif beta < 0:
+            point1, point2 = triags[i][0], triags[i][2]
+        elif gama < 0:
+            point1, point2 = triags[i][0], triags[i][1]
+
+        ind_edge = None
+        if (point1, point2) in edges:
+            ind_edge = edges.index((point1, point2))
+        else:
+            ind_edge = edges.index((point2, point1))
+
+        indexes = triags_on_edges[ind_edge]
+        for j in indexes:
+            if j != i:
+                i = j
+                break
+
+end_time = time.time()
+
+print(f"Время выполнения: {end_time - start_time:.20f} секунд")
+print(end_time - start_time, "секунд")
+# print(len(random_points), random_points)
+# print(len(nums_of_triag), nums_of_triag)
+# print(len(bar_koords), bar_koords)
+
+with open('nums_of_triag_100.json', 'w') as f:
+    json.dump(nums_of_triag, f)
+with open('bar_koords_100.json', 'w') as f:
+    json.dump(bar_koords, f)
+
+
+# print(alfa, beta, gama)
