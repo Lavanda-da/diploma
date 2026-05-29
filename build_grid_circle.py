@@ -9,7 +9,7 @@ points = []  # (index_start, index_end)
 edges = []  # (index_start, index_end)
 triags_point = []  # (point_1, point_2, point_3)
 
-r = 0.048
+r = 0.028
 EPS = 1e-5
 
 radius = 2
@@ -40,7 +40,6 @@ front_edges = edges[:]
 count_ind = 0
 
 while len(front_edges) > 0:
-    # print(len(points), len(front_edges))
     cur_edge = front_edges[0]
 
     a_x, a_y = points[cur_edge[0]][0], points[cur_edge[0]][1]
@@ -92,10 +91,6 @@ while len(front_edges) > 0:
                 elif front_edges[j][1] == front_edges[0][0] or front_edges[j][1] == front_edges[0][1]:
                     here_point = points[front_edges[j][0]]
                     correct_points += [(j, (here_point[0] - c_x) ** 2 + (here_point[1] - c_y) ** 2, front_edges[j][0])]
-                # elif ((a1_x - a_x) ** 2 + (a1_y - a_y) ** 2) ** 0.5 + \
-                #     ((a1_x - b_x) ** 2 + (a1_x - b_y) ** 2) ** 0.5 <= \
-                #     ((b1_x - a_x) ** 2 + (b1_y - a_y) ** 2) ** 0.5 + \
-                #     ((b1_x - b_x) ** 2 + (b1_x - b_y) ** 2) ** 0.5:
                 else:
                     here_point = points[front_edges[j][0]]
                     correct_points += [(j, (here_point[0] - c_x) ** 2 + (here_point[1] - c_y) ** 2, front_edges[j][0])]
@@ -105,8 +100,6 @@ while len(front_edges) > 0:
             if (a1_x - c_x) ** 2 + (a1_y - c_y) ** 2 <= r ** 2:
                 flag = False
                 correct_points += [(j, (a1_x - c_x) ** 2 + (a1_y - c_y) ** 2, front_edges[j][0])]
-            # if (b1_x - c_x) ** 2 + (b1_y - c_y) ** 2 <= r ** 2:
-            #     flag = False
                 correct_points += [(j, (b1_x - c_x) ** 2 + (b1_y - c_y) ** 2, front_edges[j][1])]
     if flag == True:
         points += [(c_x, c_y)]
@@ -130,26 +123,11 @@ while len(front_edges) > 0:
             front_edges += [(y, x)]
         else:
             del front_edges[front_edges.index((x, y))]
-    if len(points) % 5000 == 0:
-        print(len(points))
-    if len(points) > 30000:
-        print("Here")
-        break
 
 end_time = time.time()
 
-# print(points)
-# print()
-# print(edges)
-# print()
-# print(front_edges)
-# print(triags_point)
-# print()
+print(f"Время выполнения: {end_time - start_time:.40f} секунд")
 
-# print(len(points))
-
-print(end_time - start_time, "секунд")
-print(len(points))
 
 with open("start_points_100.json", "w") as f:
     json.dump([points], f)
@@ -158,44 +136,32 @@ with open("start_edges_100.json", "w") as f:
 with open("start_triags_100.json", "w") as f:
     json.dump(triags_point, f)
 
-# fig, ax = plt.subplots()
-#
-# for i in range(len(edges)):
-#     edge = edges[i]
-#     x_coords = [points[edge[0]][0], points[edge[1]][0]]
-#     y_coords = [points[edge[0]][1], points[edge[1]][1]]
-#
-#     ax.plot(x_coords, y_coords, linewidth=2, color='black')
-#
-#     # mid_x = (points[edge[0]][0] + points[edge[1]][0]) / 2
-#     # mid_y = (points[edge[0]][1] + points[edge[1]][1]) / 2
-#     #
-#     # # Добавляем номер ребра
-#     # plt.text(mid_x, mid_y, str(i),
-#     #          fontsize=10, fontweight='bold',
-#     #          color='red',
-#     #          bbox=dict(boxstyle='round,pad=0.3', facecolor='yellow', alpha=0.7))
-#
-# for i in range(len(front_edges)):
-#     edge = front_edges[i]
-#     x_coords = [points[edge[0]][0], points[edge[1]][0]]
-#     y_coords = [points[edge[0]][1], points[edge[1]][1]]
-#
-#     ax.plot(x_coords, y_coords, linewidth=2, color='red')
-#
-#
-# # for point in points:
-# #     plt.plot(point[0], point[1], 'ro', markersize=8)
-#
-# for i, (x, y) in enumerate(points):
-#     plt.plot(x, y, 'ro', markersize=8, color='black')
-#     # plt.text(x + 0.1, y + 0.1, str(i), fontsize=12, fontweight='bold')
-#
-# # circle = Circle((0, 0), radius=2, fill=False, edgecolor='red', linewidth=2)
-# # ax.add_patch(circle)
-#
-# plt.axis('equal')
-# plt.xlabel('x(0)')
-# plt.ylabel('y(0)')
-# plt.grid(True)
-# plt.show()
+
+fig, ax = plt.subplots()
+
+for i in range(len(edges)):
+    edge = edges[i]
+    x_coords = [points[edge[0]][0], points[edge[1]][0]]
+    y_coords = [points[edge[0]][1], points[edge[1]][1]]
+
+    ax.plot(x_coords, y_coords, linewidth=2, color='black')
+
+for i in range(len(front_edges)):
+    edge = front_edges[i]
+    x_coords = [points[edge[0]][0], points[edge[1]][0]]
+    y_coords = [points[edge[0]][1], points[edge[1]][1]]
+
+    ax.plot(x_coords, y_coords, linewidth=2, color='black')
+
+
+for i, (x, y) in enumerate(points):
+    plt.plot(x, y, 'ro', markersize=8, color='black')
+
+circle = Circle((0, 0), radius=2, fill=False, edgecolor='red', linewidth=2)
+ax.add_patch(circle)
+
+plt.axis('equal')
+plt.xlabel('x(0)')
+plt.ylabel('y(0)')
+plt.grid(True)
+plt.show()
